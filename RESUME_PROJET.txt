@@ -1,0 +1,117 @@
+==================================================================
+RESUME DU PROJET -- Analyse Intelligente des Avis Clients
+Derniere mise a jour : 2026-06-23
+==================================================================
+
+OBJECTIF DU PROJET
+-------------------
+Dossier professionnel M2 Expert Chef de Projet IA (EPSI). Outil
+generique d'analyse de sentiment (negatif/neutre/positif) des avis
+clients, utilisable pour n'importe quelle entreprise (pas seulement
+Revolut, le point de depart initial du sujet).
+
+==================================================================
+CE QUI EST FAIT
+==================================================================
+
+1. DONNEES (data/)
+   - Scraping Play Store + App Store sur 5 entreprises :
+     Revolut, Amazon, Uber, Uber Eats, Booking.com
+   - data/raw/        : exports bruts par source/entreprise
+   - data/processed/reviews.csv      : dataset harmonise (253 807 avis)
+   - data/processed/reviews_nlp.csv  : + colonnes sentiment + text_classical
+   - data/processed/{train,val,test}.csv : splits 70/15/15
+
+2. CIBLE DU MODELE : SENTIMENT (pas la note brute 1-5)
+   - negative (notes 1-2) / neutral (note 3) / positive (notes 4-5)
+   - Raison : la note brute laissait les classes 2/3 etoiles
+     totalement inapprises (trop rares). Le sentiment generalise
+     mieux entre secteurs.
+   - Repartition finale : 73% positif / 24% negatif / 2.8% neutre
+
+3. MODELISATION : 5 modeles entraines et compares (jeu de test)
+   | Modele                        | Accuracy | Macro F1 |
+   |-------------------------------|----------|----------|
+   | TF-IDF + Naive Bayes          | 0.910    | 0.598    |
+   | TF-IDF + Random Forest        | 0.875    | 0.595    |
+   | TF-IDF + Logistic Regression  | 0.855    | 0.635    |
+   | TF-IDF + Linear SVM           | 0.893    | 0.647    |
+   | XLM-RoBERTa (MODELE RETENU)   | 0.930    | 0.678    |
+
+   Scripts : src/models/train_tfidf_model.py (les 4 classiques)
+             src/models/train_transformer_model.py (XLM-RoBERTa)
+   Poids sauvegardes dans src/models/weights/
+
+4. API (src/api/) -- FastAPI
+   - POST /predict       : sentiment d'un avis unique
+   - POST /predict/batch : jusqu'a 500 avis + score global agrege
+   - GET  /health
+   - Doc Swagger en francais : http://localhost:8000/docs
+   - Lancer : uvicorn src.api.main:app --port 8000
+
+5. DASHBOARD (src/dashboard/) -- Streamlit, 4 onglets
+   - Prediction en direct
+   - Analyse d'un dataset (upload CSV, score global + repartition)
+   - Statistiques du dataset
+   - Performance des modeles (5 modeles, graphiques + legendes)
+   - Lancer : streamlit run src/dashboard/app.py --server.port 8501
+
+6. TESTS -- 11 tests Pytest, tous passent
+   - tests/test_api.py (8 tests)
+   - tests/test_dashboard.py (3 tests, via streamlit.testing.v1.AppTest)
+   - Lancer : python -m pytest tests/ -v
+
+7. LIVRABLES DE PRESENTATION (racine du projet)
+   - rapport_projet.pdf  : rapport complet 18 pages (contexte, demarche,
+     preprocessing avant/apres, 5 modeles, pivot avant/apres, courbe
+     d'apprentissage, matrices de confusion brutes+%, feature importance,
+     wordclouds, choix final, architecture, etat d'avancement)
+   - charts/             : 11 images PNG individuelles (reutilisables)
+   - generate_report_assets.py : script qui regenere rapport + graphiques
+     (ne reentraine rien, relit juste les metrics.json existants)
+     => Relancer : python generate_report_assets.py
+
+==================================================================
+CE QUI RESTE A FAIRE
+==================================================================
+
+PRIORITAIRE (explicitement demande dans la grille d'evaluation EPSI,
+voir sujets/partie_de_consignes.txt) :
+   - Discussion formelle ecrite du surapprentissage / biais-variance /
+     complexite, comparee entre les 5 modeles (on a la courbe de loss
+     et les matrices de confusion, mais pas encore de texte d'analyse
+     dedie a ce sujet precis)
+   - Etape 7 du workflow CLAUDE.md : Conteneurisation Docker (Dockerfiles
+     multi-stage) + CI/CD GitHub Actions (lint, tests, build, scan Trivy)
+     -- pas commencee, infrastructure/ et .github/workflows/ sont vides
+
+BONUS (mentionnes dans les consignes, pas obligatoires) :
+   - Interpretabilite SHAP/LIME (on a une feature importance globale
+     via les coefficients de la Regression Logistique, mais pas
+     d'explication par avis individuel)
+   - Validation croisee (on utilise un split fixe train/val/test)
+
+==================================================================
+DECISIONS CLES A NE PAS OUBLIER
+==================================================================
+- spaCy abandonne pour le preprocessing (pas de modele tcheque/hongrois/
+  turc) -> remplace par simplemma + stopwordsiso + emoji
+- CamemBERT/RoBERTa abandonnes (monolingues) -> XLM-RoBERTa (multilingue)
+- Sitejabber non generalise aux 4 nouvelles entreprises (volume trop
+  faible face a Play Store + App Store)
+- Le modele de PRODUCTION (charge par l'API) est XLM-RoBERTa uniquement.
+  Les 4 modeles classiques ne servent qu'au benchmark comparatif.
+- Piege Windows/Git Bash : "pkill -f uvicorn" ne tue pas le bon process.
+  Utiliser : powershell -Command "Get-NetTCPConnection -LocalPort <port>
+  | Select-Object -ExpandProperty OwningProcess" puis Stop-Process -Id <pid> -Force
+
+==================================================================
+POUR REPRENDRE LA PROCHAINE FOIS
+==================================================================
+1. Verifier que l'API et le dashboard tournent encore (sinon les relancer,
+   commandes ci-dessus)
+2. Decider : on attaque la discussion biais/variance + Etape 7 (Docker/CI-CD)
+   en premier, ou on commence directement par Docker/CI-CD ?
+3. Le contexte detaille de toutes les decisions est aussi dans la memoire
+   persistante de l'assistant (project_state.md) si besoin de retrouver
+   le pourquoi d'un choix precis.

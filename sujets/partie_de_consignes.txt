@@ -1,0 +1,63 @@
+faire un projet pour le dossier pro pour l'integrer au dossier pro voici ce qui est demander : Travail demandé 
+I. Axe Académique 
+1. comprendre vos projets, la problématique et l’objectif du travail 
+2. faire une veille technologique / veille scientifique
+3. spécifier vos objectifs / besoins 
+II. Axe Technique 
+1. Exploration et préparation des données
+=> à vous de récupérer un dataset ( kaggle , roboflow … ) 
+
+Analyse statistique des données
+Visualisation des distributions
+Gestion de la normalisation / standardisation / données manquantes
+graphe comparative des résultats : avant le prétraitement et après le prétraitement
+Séparation en jeux train / validation / test
+Modèles 
+Implémenter et évaluer au moins deux modèles
+Pour chaque modèle :
+
+entraînement,
+réglage des hyperparamètres,
+évaluation des performances => tableau récapitulatif
+Évaluation et comparaison
+Comparer les modèles à l’aide de :
+
+Accuracy
+Precision / Recall / F1-score
+Matrice de confusion
+Discuter :
+
+du surapprentissage,
+du biais / variance,
+de la complexité des modèles.
+Analyse critique
+
+Interprétation des résultats
+Avantages et limites de chaque approche
+Choix du modèle le plus adapté au problème étudié
+5 . Post-processing
+
+faire des amélioration au niveau du dataset ou les paramètres du modèle (dépend des résultats)
+évaluation des performances
+graphe comparative des résultats : avant le post-traitement et après le post-traitement
+📈 Résultats attendus
+
+Un ou plusieurs modèles entraînés et évalués
+Des graphiques clairs (courbes, matrices de confusion)
+Une comparaison argumentée des performances
+Une conclusion justifiée sur le meilleur modèle
+⭐ Extensions possibles (bonus)
+
+Validation croisée
+Early stopping et régularisation
+Importance des variables (feature importance)
+Interprétabilité (SHAP, LIME)
+Application à un dataset réel plus complexe
+Déployer et industrialiser la solution
+
+Conteneurisation avec Docker
+Hébergement Cloud , azure / GCP
+Mise en place d’une pipeline CI/CD
+Approche agile
+Maintenabilité et amélioration continue
+Notre thème c'est le suivant : analyse intelligente des avis clients qu'est ce que je fait pour le projet?

@@ -1,0 +1,52 @@
+# --- Data & Modeling ---
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+nltk
+spacy
+
+# --- Deep Learning / NLP ---
+torch
+transformers
+accelerate
+
+# --- Interpretability ---
+shap
+lime
+
+# --- Backend / API ---
+fastapi
+uvicorn[standard]
+pydantic
+
+# --- Frontend / Dashboard ---
+streamlit
+
+# --- Testing & Quality ---
+pytest
+pytest-cov
+httpx
+black
+ruff
+
+# --- Notebooks ---
+jupyter
+ipykernel
+
+# --- Config / Env ---
+python-dotenv
+
+# --- Scraping ---
+requests
+google-play-scraper
+
+# --- Language detection ---
+langdetect
+
+# --- NLP preprocessing (multilingual) ---
+simplemma
+stopwordsiso
+emoji
+wordcloud
